@@ -127,9 +127,10 @@ func logErr(host string, err error) {
 // Start starts all forwarders
 // No new forwarders may be added at this point
 func Start() {
-	log.Infof("Starting %d forwarders", len(forwarders))
+	log.Infof("Listening on %d hosts", len(forwarders))
 	for lhost, hostList := range forwarders {
 		addListener(lhost, hostList)
+		log.Info(lhost)
 	}
 }
 
