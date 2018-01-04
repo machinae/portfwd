@@ -14,11 +14,14 @@ import (
 var (
 	verbose bool
 
+	quiet bool
+
 	configPath string
 )
 
 func init() {
 	flag.BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
+	flag.BoolVarP(&quiet, "quiet", "q", false, "Suppress output")
 	flag.StringVarP(&configPath, "config", "c", "portfwd.cfg", "Path to config file")
 }
 
@@ -46,6 +49,11 @@ func parseFlags() error {
 		log.SetLevel(log.DebugLevel)
 	} else {
 		log.SetLevel(log.InfoLevel)
+	}
+
+	// Quiet overrides verbose
+	if quiet {
+		log.SetLevel(log.FatalLevel)
 	}
 
 	viper.SetConfigType("toml")
