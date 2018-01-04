@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/machinae/portfwd"
 	log "github.com/sirupsen/logrus"
@@ -17,11 +18,14 @@ var (
 	quiet bool
 
 	configPath string
+
+	timeout time.Duration
 )
 
 func init() {
 	flag.BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 	flag.BoolVarP(&quiet, "quiet", "q", false, "Suppress output")
+	flag.DurationVarP(&timeout, "timeout", "t", 30*time.Second, "Dial timeout per connection")
 	flag.StringVarP(&configPath, "config", "c", "portfwd.cfg", "Path to config file")
 }
 
@@ -55,6 +59,8 @@ func parseFlags() error {
 	if quiet {
 		log.SetLevel(log.FatalLevel)
 	}
+
+	portfwd.Timeout = timeout
 
 	viper.SetConfigType("toml")
 	viper.SetConfigFile(configPath)
