@@ -135,6 +135,7 @@ func Start() {
 
 // Stop shuts down all forwarders
 func Stop() {
+	log.Info("Shutting down...")
 	close(chSig)
 	// TODO proper waitgroup for shutdown
 	time.Sleep(100 * time.Millisecond)

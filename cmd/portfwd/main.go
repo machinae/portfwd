@@ -1,6 +1,11 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/machinae/portfwd"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -24,6 +29,15 @@ func main() {
 	if err := parseConfig(); err != nil {
 		log.Fatal(err)
 	}
+
+	portfwd.Start()
+
+	chSig := make(chan os.Signal, 1)
+	signal.Notify(chSig, syscall.SIGINT, syscall.SIGTERM)
+
+	// Wait for stop signal
+	<-chSig
+	portfwd.Stop()
 }
 
 func parseFlags() error {
