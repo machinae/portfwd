@@ -2,9 +2,21 @@ package portfwd
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
+	"strings"
 	"sync"
 )
+
+var (
+	// Names of strategies to hostlists
+	strategies = make(map[string]func() HostList)
+)
+
+func init() {
+	// Register available strategies
+	strategies["random"] = func() HostList { return NewRandomHostList() }
+}
 
 // HostList is a collection of hosts we may be dialing
 type HostList interface {
@@ -55,6 +67,10 @@ func (l *hostList) getHost(i int) (string, error) {
 	return l.hosts[i], nil
 }
 
+func (l *hostList) String() string {
+	return fmt.Sprint(l.hosts)
+}
+
 // RandomHostList returns a host from its list randomly
 type RandomHostList struct {
 	*hostList
@@ -78,4 +94,13 @@ func (l *RandomHostList) Host() (string, error) {
 
 func (l *RandomHostList) AddHost(host string) error {
 	return l.addHost(host)
+}
+
+// HostListForStrategy returns a new HostList for the given strategy
+func HostListForStrategy(strategyName string) (HostList, error) {
+	f := strategies[strings.ToLower(strategyName)]
+	if f == nil {
+		return nil, errors.New("Invalid strategy: " + strategyName)
+	}
+	return f(), nil
 }

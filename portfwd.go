@@ -15,7 +15,7 @@ var (
 	proto = "tcp"
 
 	// Default Dial Timeout
-	dialTimeout = 30 * time.Second
+	Timeout = 30 * time.Second
 
 	forwardersMu sync.Mutex
 	// Map of listen addresses to host list for requests to this address
@@ -101,7 +101,7 @@ func dialForwardHost(lhost string) (net.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	conn, err := net.DialTimeout(proto, rhost, dialTimeout)
+	conn, err := net.DialTimeout(proto, rhost, Timeout)
 	if err != nil {
 		return nil, err
 	}
