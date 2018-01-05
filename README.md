@@ -22,6 +22,15 @@ to = [
 "remote2.com:9001"
 ]
 
+[production]
+# Set strategy to roundrobin to rotate forwarders in order
+strategy = "roundrobin"
+from = ":8000"
+to = [
+"1.2.3.4:8000",
+"5.6.7.8:8000"
+]
+
 ## Run
 `portfwd -c portfwd.cfg`
 ```

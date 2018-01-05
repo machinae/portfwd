@@ -3,7 +3,6 @@ package portfwd
 import (
 	"errors"
 	"fmt"
-	"math/rand"
 	"strings"
 	"sync"
 )
@@ -16,6 +15,7 @@ var (
 func init() {
 	// Register available strategies
 	strategies["random"] = func() HostList { return NewRandomHostList() }
+	strategies["roundrobin"] = func() HostList { return NewRoundRobinHostList() }
 }
 
 // HostList is a collection of hosts we may be dialing
@@ -69,31 +69,6 @@ func (l *hostList) getHost(i int) (string, error) {
 
 func (l *hostList) String() string {
 	return fmt.Sprint(l.hosts)
-}
-
-// RandomHostList returns a host from its list randomly
-type RandomHostList struct {
-	*hostList
-}
-
-// NewRandomHostList initializes a new HostList returning hosts in random
-// order
-func NewRandomHostList() *RandomHostList {
-	return &RandomHostList{
-		hostList: newHostList(),
-	}
-}
-
-func (l *RandomHostList) Host() (string, error) {
-	if len(l.hosts) == 0 {
-		return "", errors.New("No hosts available")
-	} else {
-		return l.getHost(rand.Intn(len(l.hosts)))
-	}
-}
-
-func (l *RandomHostList) AddHost(host string) error {
-	return l.addHost(host)
 }
 
 // HostListForStrategy returns a new HostList for the given strategy
